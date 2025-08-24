@@ -64,18 +64,19 @@ class Lexer implements LexerInterface
         $candidates = array( 'en_US.UTF-8', 'en_US', 'C', 'POSIX' );
         
         // Helper to call setlocale with a category + candidate list (no PHP 8 features).
-        function _setlocale_try_candidates( $category, array $candidates ) {
+        // Using a closure to avoid global function redeclaration issues
+        $setlocale_try_candidates = function( $category, array $candidates ) {
             $args = array_merge( array( $category ), $candidates );
             $ok   = @call_user_func_array( 'setlocale', $args );
             if ( false === $ok ) {
                 @setlocale( $category, 'C' ); // last-ditch safe fallback
             }
-        }
+        };
         
         // Apply to the categories a CSV importer typically needs.
-        _setlocale_try_candidates( LC_NUMERIC, $candidates ); // numbers (decimal sep)
-        _setlocale_try_candidates( LC_CTYPE,   $candidates ); // character classes/case
-        _setlocale_try_candidates( LC_TIME,    $candidates ); // localized dates (if any)
+        $setlocale_try_candidates( LC_NUMERIC, $candidates ); // numbers (decimal sep)
+        $setlocale_try_candidates( LC_CTYPE,   $candidates ); // character classes/case
+        $setlocale_try_candidates( LC_TIME,    $candidates ); // localized dates (if any)
 
         foreach ( $csv as $lineNumber => $line ) {
             if ($ignoreHeader && $lineNumber == 0 || (count($line) === 1 && trim($line[0]) === '')) {
