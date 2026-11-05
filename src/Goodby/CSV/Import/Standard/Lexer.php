@@ -79,7 +79,7 @@ class Lexer implements LexerInterface
         $setlocale_try_candidates( LC_TIME,    $candidates ); // localized dates (if any)
 
         foreach ( $csv as $lineNumber => $line ) {
-            if ($ignoreHeader && $lineNumber == 0 || (count($line) === 1 && trim($line[0]) === '')) {
+            if ($ignoreHeader && $lineNumber == 0 || (count($line) === 1 && trim((string) $line[0]) === '')) {
                 continue;
             }
             $interpreter->interpret($line);
